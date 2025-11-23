@@ -158,6 +158,14 @@
     background-repeat: no-repeat;
   }
 
+  /* Mobile/Tablet: Use vertical background */
+  @media (max-width: 768px) {
+    body {
+      background-image: url('/vertical-background.jpg');
+      background-size: cover;
+    }
+  }
+
   /* Custom Scrollbar */
   ::-webkit-scrollbar {
     width: 12px;
