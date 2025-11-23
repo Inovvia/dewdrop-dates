@@ -134,6 +134,11 @@
 	);
 </script>
 
+<svelte:head>
+	<title>Dewdrop Dates</title>
+	<meta name="description" content="Your friendly meeting dates helper." />
+</svelte:head>
+
 <div
 	class="min-h-screen flex flex-col items-center justify-center p-6 text-foreground transition-colors duration-300 gap-8"
 >
