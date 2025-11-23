@@ -250,7 +250,7 @@
 			<!-- Right Column: Events List -->
 			<div class="md:col-span-8">
 				<Card.Root
-					class="border-border/50 shadow-xl backdrop-blur-sm bg-card/80 h-full min-h-[500px]"
+					class="border-border/50 shadow-xl backdrop-blur-sm bg-card/80 h-[60vh] md:h-[600px] flex flex-col"
 				>
 					<Card.Header>
 						<Card.Title class="text-2xl flex items-center gap-2">
@@ -270,7 +270,7 @@
 							</div>
 						</Card.Title>
 					</Card.Header>
-					<Card.Content>
+					<Card.Content class="flex-1 overflow-y-auto pr-2">
 						{#if filteredEvents.length === 0}
 							<div class="flex flex-col items-center justify-center h-64 text-muted-foreground">
 								<CalendarIcon class="w-12 h-12 mb-4 opacity-20" />
@@ -315,7 +315,7 @@
 
 										{#if event.description}
 											<p
-												class="text-sm text-muted-foreground mt-3 whitespace-pre-wrap border-t border-border/50 pt-2"
+												class="text-sm text-muted-foreground mt-3 whitespace-pre-wrap break-all border-t border-border/50 pt-2"
 											>
 												{event.description}
 											</p>
