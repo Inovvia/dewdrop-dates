@@ -140,9 +140,11 @@
 	<div class="w-full max-w-5xl space-y-8">
 		<!-- Header Section -->
 
-		<div class="text-center space-y-2">
+		<div
+			class="mx-auto w-fit max-w-full text-center space-y-2 bg-background/60 backdrop-blur-md p-8 rounded-3xl border border-border/50 shadow-sm"
+		>
 			<h1 class="text-4xl font-bold tracking-tight text-primary">Dewdrop Dates</h1>
-			<p class="text-muted-foreground text-lg">Your friendly calendar parser.</p>
+			<p class="text-muted-foreground text-lg">Your friendly meeting dates helper.</p>
 		</div>
 
 		<div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
