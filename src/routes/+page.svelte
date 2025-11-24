@@ -20,7 +20,7 @@
 	import ICAL from 'ical.js';
 	import { type DateValue, getLocalTimeZone, today } from '@internationalized/date';
 	import { toast } from 'svelte-sonner';
-	import { resetMode, toggleMode } from 'mode-watcher';
+	import { resetMode, setMode } from 'mode-watcher';
 	import { browser } from '$app/environment';
 
 	let events = $state<any[]>([]);
@@ -88,23 +88,16 @@
 	// Theme toggle functions
 	function cycleTheme() {
 		if (currentTheme === 'auto') {
-			if (systemTheme === 'light') {
-				currentTheme = 'dark';
-				toggleMode('dark');
-			} else {
-				currentTheme = 'light';
-				toggleMode('light');
-			}
+			currentTheme = 'light';
+			setMode('light');
+		} else if (currentTheme === 'light') {
+			currentTheme = 'dark';
+			setMode('dark');
 		} else {
 			currentTheme = 'auto';
-			toggleMode(resetMode);
+			// Apply system theme when switching to auto
+			resetMode;
 		}
-	}
-
-	function getThemeIcon() {
-		if (currentTheme === 'auto') return Monitor;
-		if (currentTheme === 'light') return Sun;
-		return Moon;
 	}
 
 	// Helper to format time
