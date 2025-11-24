@@ -22,6 +22,13 @@
 	import { toast } from 'svelte-sonner';
 	import { resetMode, setMode } from 'mode-watcher';
 	import { browser } from '$app/environment';
+	import { getImageUrl } from '$lib/utils/images';
+
+	// Import images using Vite's built-in handling
+	import dayBg from '$lib/assets/background.jpg';
+	import nightBg from '$lib/assets/night-background.jpg';
+	import dayVerticalBg from '$lib/assets/vertical-background.jpg';
+	import nightVerticalBg from '$lib/assets/night-vertical-background.jpg';
 
 	let events = $state<any[]>([]);
 	let selectedDate = $state<DateValue | undefined>(today(getLocalTimeZone()));
@@ -29,10 +36,13 @@
 	let parsedEvents = $state<any[]>([]);
 	let currentTheme = $state<'auto' | 'light' | 'dark'>('auto');
 	let systemTheme = $state<'light' | 'dark'>('light');
-	let backgroundClass = $state<string>('');
+	let backgroundUrl = $state<string>('');
+	let themeDetermined = $state<boolean>(false);
 
 	// Determine which background to use based on theme
 	$effect(() => {
+		if (!themeDetermined) return;
+
 		let effectiveTheme = currentTheme === 'auto' ? systemTheme : currentTheme;
 		let isNight = effectiveTheme === 'dark';
 
@@ -40,9 +50,9 @@
 		const isMobile = browser && window.innerWidth < 768;
 
 		if (isNight) {
-			backgroundClass = isMobile ? 'bg-night-vertical' : 'bg-night';
+			backgroundUrl = isMobile ? getImageUrl(nightVerticalBg) : getImageUrl(nightBg);
 		} else {
-			backgroundClass = isMobile ? 'bg-day-vertical' : 'bg-day';
+			backgroundUrl = isMobile ? getImageUrl(dayVerticalBg) : getImageUrl(dayBg);
 		}
 	});
 
@@ -57,6 +67,8 @@
 
 			// Initial check
 			updateSystemTheme();
+			// Mark theme as determined after the initial check
+			themeDetermined = true;
 
 			// Update every minute
 			const interval = setInterval(updateSystemTheme, 60000);
@@ -75,9 +87,9 @@
 			const isMobile = window.innerWidth < 768;
 
 			if (isNight) {
-				backgroundClass = isMobile ? 'bg-night-vertical' : 'bg-night';
+				backgroundUrl = isMobile ? getImageUrl(nightVerticalBg) : getImageUrl(nightBg);
 			} else {
-				backgroundClass = isMobile ? 'bg-day-vertical' : 'bg-day';
+				backgroundUrl = isMobile ? getImageUrl(dayVerticalBg) : getImageUrl(dayBg);
 			}
 		};
 
@@ -215,23 +227,15 @@
 	<title>Dewdrop Dates</title>
 	<meta name="description" content="Your friendly meeting dates helper." />
 	<style>
-		.bg-day {
-			background: url('/background.jpg') center/cover no-repeat;
-		}
-		.bg-night {
-			background: url('/night-background.jpg') center/cover no-repeat;
-		}
-		.bg-day-vertical {
-			background: url('/vertical-background.jpg') center/cover no-repeat;
-		}
-		.bg-night-vertical {
-			background: url('/night-vertical-background.jpg') center/cover no-repeat;
-		}
+		/* Background styles now set dynamically via inline styles */
 	</style>
 </svelte:head>
 
 <!-- Background layer -->
-<div class={`fixed inset-0 -z-10 transition-all duration-1000 ${backgroundClass}`}></div>
+<div
+	class="fixed inset-0 -z-10 transition-all duration-1000"
+	style="background: {themeDetermined ? `url(${backgroundUrl}) center/cover no-repeat` : 'none'}"
+></div>
 
 <div
 	class="min-h-screen flex flex-col items-center justify-center p-6 text-foreground transition-colors duration-300 gap-8"
@@ -256,11 +260,11 @@
 							<Monitor class="h-[1.2rem] w-[1.2rem] transition-all" />
 						{:else if currentTheme === 'light'}
 							<Sun
-								class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 !transition-all dark:-rotate-90 dark:scale-0"
+								class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all! dark:-rotate-90 dark:scale-0"
 							/>
 						{:else}
 							<Moon
-								class="h-[1.2rem] w-[1.2rem] rotate-90 scale-0 !transition-all dark:rotate-0 dark:scale-100"
+								class="h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all! dark:rotate-0 dark:scale-100"
 							/>
 						{/if}
 						<span class="sr-only">Toggle theme</span>
