@@ -12,16 +12,100 @@
 		Loader2,
 		MapPin,
 		Clock,
-		Copy
+		Copy,
+		Sun,
+		Moon,
+		Monitor
 	} from '@lucide/svelte';
 	import ICAL from 'ical.js';
 	import { type DateValue, getLocalTimeZone, today } from '@internationalized/date';
 	import { toast } from 'svelte-sonner';
+	import { resetMode, toggleMode } from 'mode-watcher';
+	import { browser } from '$app/environment';
 
 	let events = $state<any[]>([]);
 	let selectedDate = $state<DateValue | undefined>(today(getLocalTimeZone()));
 	let isLoading = $state(false);
 	let parsedEvents = $state<any[]>([]);
+	let currentTheme = $state<'auto' | 'light' | 'dark'>('auto');
+	let systemTheme = $state<'light' | 'dark'>('light');
+	let backgroundClass = $state<string>('');
+
+	// Determine which background to use based on theme
+	$effect(() => {
+		let effectiveTheme = currentTheme === 'auto' ? systemTheme : currentTheme;
+		let isNight = effectiveTheme === 'dark';
+
+		// Check if window width is less than md breakpoint (768px in Tailwind)
+		const isMobile = browser && window.innerWidth < 768;
+
+		if (isNight) {
+			backgroundClass = isMobile ? 'bg-night-vertical' : 'bg-night';
+		} else {
+			backgroundClass = isMobile ? 'bg-day-vertical' : 'bg-day';
+		}
+	});
+
+	// Check system theme and time for auto mode
+	$effect(() => {
+		if (browser) {
+			const updateSystemTheme = () => {
+				const hour = new Date().getHours();
+				const isDayTime = hour >= 6 && hour < 18;
+				systemTheme = isDayTime ? 'light' : 'dark';
+			};
+
+			// Initial check
+			updateSystemTheme();
+
+			// Update every minute
+			const interval = setInterval(updateSystemTheme, 60000);
+
+			return () => clearInterval(interval);
+		}
+	});
+
+	// Add resize listener to handle responsive background
+	$effect(() => {
+		if (!browser) return;
+
+		const handleResize = () => {
+			const effectiveTheme = currentTheme === 'auto' ? systemTheme : currentTheme;
+			let isNight = effectiveTheme === 'dark';
+			const isMobile = window.innerWidth < 768;
+
+			if (isNight) {
+				backgroundClass = isMobile ? 'bg-night-vertical' : 'bg-night';
+			} else {
+				backgroundClass = isMobile ? 'bg-day-vertical' : 'bg-day';
+			}
+		};
+
+		window.addEventListener('resize', handleResize);
+		return () => window.removeEventListener('resize', handleResize);
+	});
+
+	// Theme toggle functions
+	function cycleTheme() {
+		if (currentTheme === 'auto') {
+			if (systemTheme === 'light') {
+				currentTheme = 'dark';
+				toggleMode('dark');
+			} else {
+				currentTheme = 'light';
+				toggleMode('light');
+			}
+		} else {
+			currentTheme = 'auto';
+			toggleMode(resetMode);
+		}
+	}
+
+	function getThemeIcon() {
+		if (currentTheme === 'auto') return Monitor;
+		if (currentTheme === 'light') return Sun;
+		return Moon;
+	}
 
 	// Helper to format time
 	function formatTime(date: Date) {
@@ -137,19 +221,76 @@
 <svelte:head>
 	<title>Dewdrop Dates</title>
 	<meta name="description" content="Your friendly meeting dates helper." />
+	<style>
+		.bg-day {
+			background: url('/background.jpg') center/cover no-repeat;
+		}
+		.bg-night {
+			background: url('/night-background.jpg') center/cover no-repeat;
+		}
+		.bg-day-vertical {
+			background: url('/vertical-background.jpg') center/cover no-repeat;
+		}
+		.bg-night-vertical {
+			background: url('/night-vertical-background.jpg') center/cover no-repeat;
+		}
+	</style>
 </svelte:head>
+
+<!-- Background layer -->
+<div class={`fixed inset-0 -z-10 transition-all duration-1000 ${backgroundClass}`}></div>
 
 <div
 	class="min-h-screen flex flex-col items-center justify-center p-6 text-foreground transition-colors duration-300 gap-8"
 >
 	<div class="w-full max-w-5xl space-y-8">
-		<!-- Header Section -->
-
+		<!-- Header Section with theme toggle -->
 		<div
 			class="mx-auto w-fit max-w-full text-center space-y-2 bg-background/60 backdrop-blur-md p-8 rounded-3xl border border-border/50 shadow-sm"
 		>
-			<h1 class="text-4xl font-bold tracking-tight text-primary">Dewdrop Dates</h1>
+			<div class="flex justify-between items-center mb-2">
+				<div class="flex-1"></div>
+				<h1 class="text-4xl font-bold tracking-tight text-primary flex-1">Dewdrop Dates</h1>
+				<div class="flex-1 flex justify-end">
+					<Button
+						onclick={cycleTheme}
+						variant="outline"
+						size="icon"
+						class="rounded-full"
+						title={`Current theme: ${currentTheme}`}
+					>
+						{#if currentTheme === 'auto'}
+							<Monitor class="h-[1.2rem] w-[1.2rem] transition-all" />
+						{:else if currentTheme === 'light'}
+							<Sun
+								class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 !transition-all dark:-rotate-90 dark:scale-0"
+							/>
+						{:else}
+							<Moon
+								class="h-[1.2rem] w-[1.2rem] rotate-90 scale-0 !transition-all dark:rotate-0 dark:scale-100"
+							/>
+						{/if}
+						<span class="sr-only">Toggle theme</span>
+					</Button>
+				</div>
+			</div>
 			<p class="text-muted-foreground text-lg">Your friendly meeting dates helper.</p>
+			<div class="flex justify-center mt-2">
+				<div
+					class="flex items-center text-xs text-muted-foreground bg-muted/50 px-3 py-1 rounded-full"
+				>
+					{#if currentTheme === 'auto'}
+						<Monitor class="w-3 h-3 mr-1.5" />
+						Theme: Auto ({systemTheme === 'dark' ? 'Night' : 'Day'})
+					{:else if currentTheme === 'light'}
+						<Sun class="w-3 h-3 mr-1.5" />
+						Theme: Day
+					{:else}
+						<Moon class="w-3 h-3 mr-1.5" />
+						Theme: Night
+					{/if}
+				</div>
+			</div>
 		</div>
 
 		<div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
