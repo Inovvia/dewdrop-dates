@@ -23,6 +23,7 @@
 	import { resetMode, setMode } from 'mode-watcher';
 	import { browser } from '$app/environment';
 	import { getImageUrl } from '$lib/utils/images';
+	import { Badge } from '$lib/components/ui/badge/index.js';
 
 	// Import images using Vite's built-in handling
 	import dayBg from '$lib/assets/background.jpg';
@@ -236,7 +237,17 @@
 	<title>Dewdrop Dates</title>
 	<meta name="description" content="Your friendly meeting dates helper." />
 	<style>
-		/* Background styles now set dynamically via inline styles */
+		@keyframes pulse-subtle {
+			0%,
+			100% {
+				opacity: 1;
+				transform: scale(1);
+			}
+			50% {
+				opacity: 0.95;
+				transform: scale(1.01);
+			}
+		}
 	</style>
 </svelte:head>
 
@@ -252,7 +263,7 @@
 	<div class="w-full max-w-5xl space-y-8">
 		<!-- Header Section with theme toggle -->
 		<div
-			class="mx-auto w-fit max-w-full text-center space-y-2 bg-background/60 backdrop-blur-md p-8 rounded-3xl border border-border/50 shadow-sm"
+			class="mx-auto w-fit max-w-full text-center space-y-2 bg-background/80 backdrop-blur-xl p-8 rounded-3xl border-2 border-border shadow-2xl"
 		>
 			<div class="flex justify-between items-center mb-2">
 				<div class="flex-1"></div>
@@ -283,23 +294,26 @@
 			<p class="text-muted-foreground text-lg">Your friendly meeting dates helper.</p>
 			<div class="flex justify-center mt-6 mb-4">
 				<div
-					class="flex flex-col items-center text-sm font-medium text-muted-foreground bg-muted/50 px-6 py-3 rounded-2xl backdrop-blur-sm border border-border/50 shadow-sm transition-all hover:bg-muted/80 hover:scale-105"
+					class="flex flex-col items-center text-sm font-medium text-muted-foreground px-4 rounded-xl transition-all hover:border-border min-w-[200px]"
 				>
-					<span class="text-xs uppercase tracking-wider opacity-80 mb-1"
-						>{currentTime.toLocaleDateString('en-US', {
-							weekday: 'short',
-							month: 'short',
-							day: 'numeric'
-						})}</span
-					>
-					<span class="text-2xl font-bold text-primary tabular-nums tracking-tight leading-none"
-						>{currentTime.toLocaleTimeString('en-US', {
-							hour12: false,
-							hour: '2-digit',
-							minute: '2-digit',
-							second: '2-digit'
-						})}</span
-					>
+					<Badge variant="secondary" class="w-full p-4 flex flex-col">
+						<span class="text-sm uppercase tracking-wider opacity-90 font-black w-full text-center"
+							>{currentTime.toLocaleDateString('en-US', {
+								weekday: 'short',
+								month: 'short',
+								day: 'numeric'
+							})}</span
+						>
+						<span
+							class="text-xl font-bold text-foreground tabular-nums tracking-tight leading-none w-full text-center"
+							>{currentTime.toLocaleTimeString('en-US', {
+								hour12: false,
+								hour: '2-digit',
+								minute: '2-digit',
+								second: '2-digit'
+							})}</span
+						>
+					</Badge>
 				</div>
 			</div>
 			<div class="flex justify-center mt-2">
