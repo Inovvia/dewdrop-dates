@@ -38,6 +38,7 @@
 	let systemTheme = $state<'light' | 'dark'>('light');
 	let backgroundUrl = $state<string>('');
 	let themeDetermined = $state<boolean>(false);
+	let currentTime = $state(new Date());
 
 	// Determine which background to use based on theme
 	$effect(() => {
@@ -95,6 +96,14 @@
 
 		window.addEventListener('resize', handleResize);
 		return () => window.removeEventListener('resize', handleResize);
+	});
+
+	// Clock timer
+	$effect(() => {
+		const interval = setInterval(() => {
+			currentTime = new Date();
+		}, 1000);
+		return () => clearInterval(interval);
 	});
 
 	// Theme toggle functions
@@ -272,6 +281,27 @@
 				</div>
 			</div>
 			<p class="text-muted-foreground text-lg">Your friendly meeting dates helper.</p>
+			<div class="flex justify-center mt-6 mb-4">
+				<div
+					class="flex flex-col items-center text-sm font-medium text-muted-foreground bg-muted/50 px-6 py-3 rounded-2xl backdrop-blur-sm border border-border/50 shadow-sm transition-all hover:bg-muted/80 hover:scale-105"
+				>
+					<span class="text-xs uppercase tracking-wider opacity-80 mb-1"
+						>{currentTime.toLocaleDateString('en-US', {
+							weekday: 'short',
+							month: 'short',
+							day: 'numeric'
+						})}</span
+					>
+					<span class="text-2xl font-bold text-primary tabular-nums tracking-tight leading-none"
+						>{currentTime.toLocaleTimeString('en-US', {
+							hour12: false,
+							hour: '2-digit',
+							minute: '2-digit',
+							second: '2-digit'
+						})}</span
+					>
+				</div>
+			</div>
 			<div class="flex justify-center mt-2">
 				<div
 					class="flex items-center text-xs text-muted-foreground bg-muted/50 px-3 py-1 rounded-full"
