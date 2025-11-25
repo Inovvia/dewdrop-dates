@@ -257,6 +257,36 @@
 	style="background: {themeDetermined ? `url(${backgroundUrl}) center/cover no-repeat` : 'none'}"
 ></div>
 
+<!-- Fixed Clock for Desktop -->
+<div
+	class="fixed top-6 right-6 z-50 hidden md:flex flex-col items-end gap-2 animate-in fade-in slide-in-from-top-4 duration-700"
+>
+	<Badge
+		variant="secondary"
+		class="px-5 py-3 flex flex-col gap-1 backdrop-blur-xl bg-background/80 shadow-2xl border-2 border-border/50 hover:border-primary/50 transition-all hover:scale-105"
+	>
+		<div class="flex items-center justify-center gap-2 w-full opacity-90">
+			<Clock class="w-3.5 h-3.5 text-primary" />
+			<span class="text-xs uppercase tracking-wider font-black text-muted-foreground"
+				>{currentTime.toLocaleDateString('en-US', {
+					weekday: 'short',
+					month: 'short',
+					day: 'numeric'
+				})}</span
+			>
+		</div>
+		<span
+			class="text-xl font-bold text-foreground tabular-nums tracking-tight leading-none w-full text-center"
+			>{currentTime.toLocaleTimeString('en-US', {
+				hour12: false,
+				hour: '2-digit',
+				minute: '2-digit',
+				second: '2-digit'
+			})}</span
+		>
+	</Badge>
+</div>
+
 <div
 	class="min-h-screen flex flex-col items-center justify-center p-6 text-foreground transition-colors duration-300 gap-8"
 >
@@ -268,7 +298,7 @@
 			<div class="flex justify-between items-center mb-2">
 				<div class="flex-1"></div>
 				<h1 class="text-4xl font-bold tracking-tight text-primary flex-1">Dewdrop Dates</h1>
-				<div class="flex-1 flex justify-end">
+				<div class="flex-1 flex justify-end items-center gap-4">
 					<Button
 						onclick={cycleTheme}
 						variant="outline"
@@ -294,7 +324,7 @@
 			<p class="text-muted-foreground text-lg">Your friendly meeting dates helper.</p>
 			<div class="flex justify-center mt-6 mb-4">
 				<div
-					class="flex flex-col items-center text-sm font-medium text-muted-foreground px-4 rounded-xl transition-all hover:border-border min-w-[200px]"
+					class="flex flex-col items-center text-sm font-medium text-muted-foreground px-4 rounded-xl transition-all hover:border-border min-w-[200px] md:hidden"
 				>
 					<Badge variant="secondary" class="w-full p-4 flex flex-col">
 						<span class="text-sm uppercase tracking-wider opacity-90 font-black w-full text-center"
