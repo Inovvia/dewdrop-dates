@@ -307,15 +307,11 @@
 						title={`Current theme: ${currentTheme}`}
 					>
 						{#if currentTheme === 'auto'}
-							<Monitor class="h-[1.2rem] w-[1.2rem] transition-all" />
+							<Monitor class="h-[1.2rem] w-[1.2rem] " />
 						{:else if currentTheme === 'light'}
-							<Sun
-								class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all! dark:-rotate-90 dark:scale-0"
-							/>
+							<Sun class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 " />
 						{:else}
-							<Moon
-								class="h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all! dark:rotate-0 dark:scale-100"
-							/>
+							<Moon class="h-[1.2rem] w-[1.2rem]" />
 						{/if}
 						<span class="sr-only">Toggle theme</span>
 					</Button>
