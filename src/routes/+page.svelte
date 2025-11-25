@@ -541,4 +541,15 @@
 			</div>
 		</div>
 	</div>
+
+	<footer class="text-center text-white pb-2">
+		<a
+			href="https://github.com/Inovvia/dewdrop-dates"
+			target="_blank"
+			rel="noreferrer"
+			class="text-sm font-medium text-white hover:text-white/50 transition-colors"
+		>
+			Made with 💜 by JM
+		</a>
+	</footer>
 </div>
